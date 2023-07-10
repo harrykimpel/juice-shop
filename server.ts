@@ -132,7 +132,7 @@ const collectDurationPromise = (name: string, func: Function) => {
     return res
   }
 }
-void collectDurationPromise('validatePreconditions', require('./lib/startup/validatePreconditions'))()
+//void collectDurationPromise('validatePreconditions', require('./lib/startup/validatePreconditions'))()
 void collectDurationPromise('cleanupFtpFolder', require('./lib/startup/cleanupFtpFolder'))()
 void collectDurationPromise('validateConfig', require('./lib/startup/validateConfig'))({})
 
