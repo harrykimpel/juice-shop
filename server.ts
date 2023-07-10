@@ -137,7 +137,7 @@ void collectDurationPromise('cleanupFtpFolder', require('./lib/startup/cleanupFt
 void collectDurationPromise('validateConfig', require('./lib/startup/validateConfig'))({})
 
 // Reloads the i18n files in case of server restarts or starts.
-async function restoreOverwrittenFilesWithOriginals () {
+async function restoreOverwrittenFilesWithOriginals() {
   await collectDurationPromise('restoreOverwrittenFilesWithOriginals', require('./lib/startup/restoreOverwrittenFilesWithOriginals'))()
 }
 
@@ -277,7 +277,7 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   app.post('/rest/memories', uploadToDisk.single('image'), ensureFileIsPassed, security.appendUserId(), metrics.observeFileUploadMetricsMiddleware(), memory.addMemory())
 
   app.use(bodyParser.text({ type: '*/*' }))
-  app.use(function jsonParser (req: Request, res: Response, next: NextFunction) {
+  app.use(function jsonParser(req: Request, res: Response, next: NextFunction) {
     // @ts-expect-error
     req.rawBody = req.body
     if (req.headers['content-type']?.includes('application/json')) {
@@ -306,7 +306,7 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   app.use('/rest/user/reset-password', new RateLimit({
     windowMs: 5 * 60 * 1000,
     max: 100,
-    keyGenerator ({ headers, ip }: { headers: any, ip: any }) { return headers['X-Forwarded-For'] || ip } // vuln-code-snippet vuln-line resetPasswordMortyChallenge
+    keyGenerator({ headers, ip }: { headers: any, ip: any }) { return headers['X-Forwarded-For'] || ip } // vuln-code-snippet vuln-line resetPasswordMortyChallenge
   }))
   // vuln-code-snippet end resetPasswordMortyChallenge
 
@@ -667,10 +667,10 @@ errorhandler.title = `${config.get('application.name')} (Express ${utils.version
 const registerWebsocketEvents = require('./lib/startup/registerWebsocketEvents')
 const customizeApplication = require('./lib/startup/customizeApplication')
 
-export async function start (readyCallback: Function) {
+export async function start(readyCallback: Function) {
   const datacreatorEnd = startupGauge.startTimer({ task: 'datacreator' })
-  await sequelize.sync({ force: true })
-  await datacreator()
+  //await sequelize.sync({ force: true })
+  //await datacreator()
   datacreatorEnd()
   const port = process.env.PORT ?? config.get('server.port')
   process.env.BASE_PATH = process.env.BASE_PATH ?? config.get('server.basePath')
@@ -693,7 +693,7 @@ export async function start (readyCallback: Function) {
   void collectDurationPromise('customizeEasterEgg', customizeEasterEgg)() // vuln-code-snippet hide-line
 }
 
-export function close (exitCode: number | undefined) {
+export function close(exitCode: number | undefined) {
   if (server) {
     clearInterval(metricsUpdateLoop)
     server.close()
