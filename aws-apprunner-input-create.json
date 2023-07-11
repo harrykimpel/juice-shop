@@ -1,0 +1,48 @@
+{
+    "ServiceName": "juice-shop-mysql",
+    "SourceConfiguration": {
+        "ImageRepository": {
+            "ImageIdentifier": "public.ecr.aws/m5o8t9w4/juice-shop:mysql",
+            "ImageConfiguration": {
+                "RuntimeEnvironmentVariables": {
+                    "NEW_RELIC_SECURITY_ENABLED": "true",
+                    "NEW_RELIC_APP_NAME": "juice-shop-mysql",
+                    "NEW_RELIC_LICENSE_KEY": "<NEW_RELIC_LICENSE_KEY>",
+                    "NEW_RELIC_SECURITY_AGENT_ENABLED": "true",
+                    "MYSQL_HOST": "<MYSQL_HOST>",
+                    "MYSQL_DATABASE": "juiceshop",
+                    "MYSQL_USER": "admin",
+                    "MYSQL_PASSWORD": "<MYSQL_PASSWORD>"
+                },
+                "Port": "3000",
+                "RuntimeEnvironmentSecrets": {}
+            },
+            "ImageRepositoryType": "ECR_PUBLIC"
+        },
+        "AutoDeploymentsEnabled": false,
+        "AuthenticationConfiguration": {}
+    },
+    "InstanceConfiguration": {
+        "Cpu": "1024",
+        "Memory": "2048"
+    },
+    "HealthCheckConfiguration": {
+        "Protocol": "TCP",
+        "Path": "/",
+        "Interval": 10,
+        "Timeout": 5,
+        "HealthyThreshold": 1,
+        "UnhealthyThreshold": 5
+    },
+    "NetworkConfiguration": {
+        "EgressConfiguration": {
+            "EgressType": "DEFAULT"
+        },
+        "IngressConfiguration": {
+            "IsPubliclyAccessible": true
+        }
+    },
+    "ObservabilityConfiguration": {
+        "ObservabilityEnabled": false
+    }
+}
