@@ -45,7 +45,7 @@ function loadStaticData(file: string) {
 }
 
 module.exports = async () => {
-  /*const creators = [
+  const creators = [
     createSecurityQuestions,
     createUsers,
     createChallenges,
@@ -65,7 +65,7 @@ module.exports = async () => {
 
   for (const creator of creators) {
     await creator()
-  }*/
+  }
 }
 
 async function createChallenges() {

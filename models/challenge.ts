@@ -13,8 +13,8 @@ import {
   Sequelize
 } from 'sequelize'
 class Challenge extends Model<
-InferAttributes<Challenge>,
-InferCreationAttributes<Challenge>
+  InferAttributes<Challenge>,
+  InferCreationAttributes<Challenge>
 > {
   declare id: CreationOptional<number>
   declare name: string
@@ -51,8 +51,8 @@ const ChallengeModelInit = (sequelize: Sequelize) => {
       mitigationUrl: DataTypes.STRING,
       solved: DataTypes.BOOLEAN,
       disabledEnv: DataTypes.STRING,
-      tutorialOrder: DataTypes.NUMBER,
-      codingChallengeStatus: DataTypes.NUMBER
+      tutorialOrder: DataTypes.INTEGER,
+      codingChallengeStatus: DataTypes.INTEGER
     },
     {
       tableName: 'Challenges',

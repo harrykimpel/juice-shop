@@ -669,8 +669,14 @@ const customizeApplication = require('./lib/startup/customizeApplication')
 
 export async function start(readyCallback: Function) {
   const datacreatorEnd = startupGauge.startTimer({ task: 'datacreator' })
-  //await sequelize.sync({ force: true })
-  //await datacreator()
+
+  const isSequelizeSyncAndData = process.env.IS_SEQUELIZE_SYNC_AND_DATA;
+
+  if (isSequelizeSyncAndData) {
+    await sequelize.sync({ force: true })
+    await datacreator()
+  }
+
   datacreatorEnd()
   const port = process.env.PORT ?? config.get('server.port')
   process.env.BASE_PATH = process.env.BASE_PATH ?? config.get('server.basePath')
