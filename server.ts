@@ -672,7 +672,8 @@ export async function start(readyCallback: Function) {
 
   const isSequelizeSyncAndData = process.env.IS_SEQUELIZE_SYNC_AND_DATA;
 
-  if (isSequelizeSyncAndData) {
+  if (isSequelizeSyncAndData &&
+    isSequelizeSyncAndData == "true") {
     await sequelize.sync({ force: true })
     await datacreator()
   }
