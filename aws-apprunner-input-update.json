@@ -1,9 +1,0 @@
-{
-    "ServiceArn": "arn:aws:apprunner:us-east-1:762880000183:service/juice-shop-mysql/522fae0ac2fa46c0bede4d5a48abcd39",
-    "SourceConfiguration": {
-        "ImageRepository": {
-            "ImageIdentifier": "public.ecr.aws/m5o8t9w4/juice-shop:mysql-fixed",
-            "ImageRepositoryType": "ECR_PUBLIC"
-        }
-    }
-}
