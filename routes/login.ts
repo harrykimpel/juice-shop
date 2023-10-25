@@ -37,7 +37,7 @@ module.exports = function login() {
     models.sequelize.query(`SELECT * FROM Users WHERE email = :email AND password = :password AND deletedAt IS NULL`,
       {
         model: UserModel,
-        plain: true,
+        plain: true, // if plain is true, then sequelize will only return the first record of the result set. In case of false it will return all records.
         replacements: {
           email: req.body.email || '',
           password: security.hash(req.body.password || '')
