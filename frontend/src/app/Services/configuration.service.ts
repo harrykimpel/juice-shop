@@ -7,12 +7,12 @@ import { environment } from '../../environments/environment'
 import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { catchError, map } from 'rxjs/operators'
-import { Observable } from 'rxjs'
+import { type Observable } from 'rxjs'
 
 interface ConfigResponse {
   config: Config
 }
-interface Config {
+export interface Config {
   server: {
     port: number
   }
@@ -47,10 +47,6 @@ interface Config {
       message: string
     }
     cookieConsent: {
-      backgroundColor: string
-      textColor: string
-      buttonColor: string
-      buttonTextColor: string
       message: string
       dismissText: string
       linkText: string
@@ -99,7 +95,7 @@ interface Config {
 
 @Injectable({
   providedIn: 'root'
-  })
+})
 export class ConfigurationService {
   private readonly hostServer = environment.hostServer
   private readonly host = this.hostServer + '/rest/admin'

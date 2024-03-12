@@ -4,7 +4,7 @@
  */
 
 import { Injectable } from '@angular/core'
-import { Backup } from '../Models/backup.model'
+import { type Backup } from '../Models/backup.model'
 import { CookieService } from 'ngx-cookie'
 import { saveAs } from 'file-saver'
 import { SnackBarHelperService } from './snack-bar-helper.service'
@@ -14,7 +14,7 @@ import { ChallengeService } from './challenge.service'
 
 @Injectable({
   providedIn: 'root'
-  })
+})
 export class LocalBackupService {
   private readonly VERSION = 1
 
@@ -24,6 +24,7 @@ export class LocalBackupService {
     const backup: Backup = { version: this.VERSION }
 
     backup.scoreBoard = {
+      scoreBoardVersion: localStorage.getItem('score-board-version') ? JSON.parse(String(localStorage.getItem('score-board-version'))) : undefined,
       displayedDifficulties: localStorage.getItem('displayedDifficulties') ? JSON.parse(String(localStorage.getItem('displayedDifficulties'))) : undefined,
       showSolvedChallenges: localStorage.getItem('showSolvedChallenges') ? JSON.parse(String(localStorage.getItem('showSolvedChallenges'))) : undefined,
       showDisabledChallenges: localStorage.getItem('showDisabledChallenges') ? JSON.parse(String(localStorage.getItem('showDisabledChallenges'))) : undefined,
@@ -60,6 +61,7 @@ export class LocalBackupService {
       const backup: Backup = JSON.parse(backupData)
 
       if (backup.version === this.VERSION) {
+        this.restoreLocalStorage('score-board-version', backup.scoreBoard?.scoreBoardVersion)
         this.restoreLocalStorage('displayedDifficulties', backup.scoreBoard?.displayedDifficulties)
         this.restoreLocalStorage('showSolvedChallenges', backup.scoreBoard?.showSolvedChallenges)
         this.restoreLocalStorage('showDisabledChallenges', backup.scoreBoard?.showDisabledChallenges)
@@ -81,7 +83,7 @@ export class LocalBackupService {
           const fixItProgress = backup.continueCodeFixIt ? this.challengeService.restoreProgressFixIt(encodeURIComponent(backup.continueCodeFixIt)) : of(true)
           forkJoin([hackingProgress, findItProgress, fixItProgress]).subscribe(() => {
             location.reload()
-          }, (err) => console.log(err))
+          }, (err) => { console.log(err) })
         })
       } else {
         this.snackBarHelperService.open(`Version ${backup.version} is incompatible with expected version ${this.VERSION}`, 'errorBar')

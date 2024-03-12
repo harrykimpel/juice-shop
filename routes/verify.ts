@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { Request, Response, NextFunction } from 'express'
-import { Challenge, Product } from '../data/types'
-import { JwtPayload, VerifyErrors } from 'jsonwebtoken'
+import { type Request, type Response, type NextFunction } from 'express'
+import { type Challenge, type Product } from '../data/types'
+import { type JwtPayload, type VerifyErrors } from 'jsonwebtoken'
 import { FeedbackModel } from '../models/feedback'
 import { ComplaintModel } from '../models/complaint'
 import { Op } from 'sequelize'
@@ -63,6 +63,7 @@ exports.passwordRepeatChallenge = () => (req: Request, res: Response, next: Next
 
 exports.accessControlChallenges = () => ({ url }: Request, res: Response, next: NextFunction) => {
   challengeUtils.solveIf(challenges.scoreBoardChallenge, () => { return utils.endsWith(url, '/1px.png') })
+  challengeUtils.solveIf(challenges.web3SandboxChallenge, () => { return utils.endsWith(url, '/11px.png') })
   challengeUtils.solveIf(challenges.adminSectionChallenge, () => { return utils.endsWith(url, '/19px.png') })
   challengeUtils.solveIf(challenges.tokenSaleChallenge, () => { return utils.endsWith(url, '/56px.png') })
   challengeUtils.solveIf(challenges.privacyPolicyChallenge, () => { return utils.endsWith(url, '/81px.png') })

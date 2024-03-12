@@ -11,7 +11,7 @@
 
 ## GitHub Contributors
 
-As reported by [`git-stats -a -s '2014'`](https://www.npmjs.com/package/git-stats) analysis of `master` as of Fri, 19 May
+As reported by [`git-stats -a -s '2014'`](https://www.npmjs.com/package/git-stats) analysis of `master` as of Fri, 08 Sep
 2023 after deduplication with `.mailmap`.
 
 ![Top git contributors](screenshots/git-stats.png)
@@ -79,6 +79,7 @@ Additional thanks goes to the contractors we were able to hire for specific work
   and
   [flyer](https://github.com/OWASP/owasp-swag/tree/master/projects/juice-shop/flyers)
   artwork by [logicainfo](https://99designs.de/profiles/logicainfo)
+* [Score Board redesign](https://www.figma.com/file/DwC5ErhRz6gb3eTZEYYriS/Juiceshop-Scoreboard?type=design&node-id=0-1&mode=design) by Vibhuti Arora
 
 ## Stargazers (over time)
 

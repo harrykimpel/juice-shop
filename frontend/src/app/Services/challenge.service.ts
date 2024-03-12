@@ -6,22 +6,24 @@
 import { environment } from '../../environments/environment'
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
+import { type Observable } from 'rxjs'
 import { catchError, map } from 'rxjs/operators'
+import { type Challenge } from '../Models/challenge.model'
 
 @Injectable({
   providedIn: 'root'
-  })
+})
 export class ChallengeService {
   private readonly hostServer = environment.hostServer
   private readonly host = this.hostServer + '/api/Challenges'
   constructor (private readonly http: HttpClient) { }
 
-  find (params?: any) {
-    return this.http.get(this.host + '/', { params: params }).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+  find (params?: any): Observable<Challenge[]> {
+    return this.http.get(this.host + '/', { params }).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
   }
 
   repeatNotification (challengeName: string) {
-    return this.http.get(this.hostServer + '/rest/repeat-notification', { params: { challenge: challengeName } }).pipe(catchError((err) => { throw err }))
+    return this.http.get(this.hostServer + '/rest/repeat-notification', { params: { challenge: challengeName }, responseType: 'text' as const }).pipe(catchError((err) => { throw err }))
   }
 
   continueCode () {

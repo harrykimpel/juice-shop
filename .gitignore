@@ -30,6 +30,8 @@ vagrant/.vagrant/
 JSON
 JSON.map
 frontend/src/**/*.js
+/bom.json
+/bom.xml
 
 # IDEs
 .idea/
@@ -60,6 +62,6 @@ config/*.yml
 !config/tutorial.yml
 !config/oss.yml
 
-.DS_Store
+# System Files
 
 newrelic_agent.log

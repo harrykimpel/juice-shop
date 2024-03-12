@@ -4,7 +4,7 @@
  */
 
 import config from 'config'
-import { Request, Response } from 'express'
+import { type Request, type Response } from 'express'
 import { BasketModel } from '../models/basket'
 import { UserModel } from '../models/user'
 import challengeUtils = require('../lib/challengeUtils')
@@ -31,7 +31,7 @@ async function verify (req: Request, res: Response) {
     }
 
     const user = await UserModel.findByPk(userId)
-    if (!user) {
+    if (user == null) {
       throw new Error('No such user found!')
     }
 
@@ -47,6 +47,7 @@ async function verify (req: Request, res: Response) {
     const [basket] = await BasketModel.findOrCreate({ where: { UserId: userId } })
 
     const token = security.authorize(plainUser)
+    // @ts-expect-error FIXME set new property for original basket
     plainUser.bid = basket.id // keep track of original basket for challenge solution check
     security.authenticatedUsers.put(token, plainUser)
 
@@ -128,7 +129,7 @@ async function setup (req: Request, res: Response) {
 
     // Update db model and cached object
     const userModel = await UserModel.findByPk(user.id)
-    if (!userModel) {
+    if (userModel == null) {
       throw new Error('No such user found!')
     }
 
@@ -161,7 +162,7 @@ async function disable (req: Request, res: Response) {
 
     // Update db model and cached object
     const userModel = await UserModel.findByPk(user.id)
-    if (!userModel) {
+    if (userModel == null) {
       throw new Error('No such user found!')
     }
 

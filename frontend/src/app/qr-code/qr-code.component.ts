@@ -4,18 +4,17 @@
  */
 
 import { MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { Component, Inject, OnInit } from '@angular/core'
-import { dom, library } from '@fortawesome/fontawesome-svg-core'
+import { Component, Inject, type OnInit } from '@angular/core'
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faArrowCircleLeft)
-dom.watch()
 
 @Component({
   selector: 'app-qr-code',
   templateUrl: './qr-code.component.html',
   styleUrls: ['./qr-code.component.scss']
-  })
+})
 export class QrCodeComponent implements OnInit {
   public title!: string
   public url!: string

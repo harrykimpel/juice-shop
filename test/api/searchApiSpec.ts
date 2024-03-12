@@ -4,7 +4,8 @@
  */
 
 import frisby = require('frisby')
-import { Product } from '../../data/types'
+import { expect } from '@jest/globals'
+import { type Product } from '../../data/types'
 import config from 'config'
 const security = require('../../lib/insecurity')
 

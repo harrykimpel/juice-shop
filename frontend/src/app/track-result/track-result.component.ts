@@ -5,14 +5,13 @@
 
 import { ActivatedRoute } from '@angular/router'
 import { MatTableDataSource } from '@angular/material/table'
-import { Component, OnInit } from '@angular/core'
+import { Component, type OnInit } from '@angular/core'
 import { TrackOrderService } from '../Services/track-order.service'
 import { DomSanitizer } from '@angular/platform-browser'
-import { dom, library } from '@fortawesome/fontawesome-svg-core'
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { faHome, faSync, faTruck, faTruckLoading, faWarehouse } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faWarehouse, faSync, faTruckLoading, faTruck, faHome)
-dom.watch()
 
 export enum Status {
   New,
@@ -25,7 +24,7 @@ export enum Status {
   selector: 'app-track-result',
   templateUrl: './track-result.component.html',
   styleUrls: ['./track-result.component.scss']
-  })
+})
 export class TrackResultComponent implements OnInit {
   public displayedColumns = ['product', 'price', 'quantity', 'total price']
   public dataSource = new MatTableDataSource()

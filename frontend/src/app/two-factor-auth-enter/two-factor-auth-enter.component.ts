@@ -9,11 +9,10 @@ import { TwoFactorAuthService } from '../Services/two-factor-auth-service'
 import { CookieService } from 'ngx-cookie'
 import { UserService } from '../Services/user.service'
 import { Router } from '@angular/router'
-import { dom, library } from '@fortawesome/fontawesome-svg-core'
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faUnlockAlt)
-dom.watch()
 
 interface TokenEnterFormFields {
   token: string
@@ -23,13 +22,13 @@ interface TokenEnterFormFields {
   selector: 'app-two-factor-auth-enter',
   templateUrl: './two-factor-auth-enter.component.html',
   styleUrls: ['./two-factor-auth-enter.component.scss']
-  })
+})
 export class TwoFactorAuthEnterComponent {
   public twoFactorForm: UntypedFormGroup = new UntypedFormGroup({
     token: new UntypedFormControl('', [Validators.minLength(6), Validators.maxLength(6), Validators.required, Validators.pattern('^[\\d]{6}$')])
   })
 
-  public errored: Boolean = false
+  public errored: boolean = false
 
   constructor (
     private readonly twoFactorAuthService: TwoFactorAuthService,

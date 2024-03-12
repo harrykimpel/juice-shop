@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { type ComponentFixture, TestBed } from '@angular/core/testing'
 import { CookieModule, CookieService } from 'ngx-cookie'
 
 import { CodeFixesComponent } from './code-fixes.component'
@@ -15,7 +15,7 @@ describe('CodeFixesComponent', () => {
       providers: [CookieService]
     })
       .compileComponents()
-      cookieService = TestBed.inject(CookieService)
+    cookieService = TestBed.inject(CookieService)
   })
 
   beforeEach(() => {
@@ -28,11 +28,18 @@ describe('CodeFixesComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should remember the original order of available code fix options when shuffling', () => {
-    component.fixes = ['Fix 1', 'Fix 2', 'Fix 3']
-    component.shuffle()
-    expect(component.randomFixes).toContain({ fix: 'Fix 1', index: 0 })
-    expect(component.randomFixes).toContain({ fix: 'Fix 2', index: 1 })
-    expect(component.randomFixes).toContain({ fix: 'Fix 3', index: 2 })
+  it('should set the format from cookie if the cookie key exists', () => {
+    spyOn(cookieService, 'hasKey').and.returnValue(true)
+    spyOn(cookieService, 'get').and.returnValue('LineByLine')
+    component.ngOnInit()
+    expect(component.format).toBe('LineByLine')
+  })
+
+  it('should set the format to "LineByLine" and save it in the cookie if the cookie key does not exist', () => {
+    spyOn(cookieService, 'hasKey').and.returnValue(false)
+    spyOn(cookieService, 'put')
+    component.ngOnInit()
+    expect(component.format).toBe('LineByLine')
+    expect(cookieService.put).toHaveBeenCalledWith('code-fixes-component-format', 'LineByLine')
   })
 })

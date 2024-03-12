@@ -4,6 +4,7 @@
  */
 
 import frisby = require('frisby')
+import { expect } from '@jest/globals'
 import config from 'config'
 import path from 'path'
 const fs = require('fs')
@@ -42,7 +43,7 @@ describe('/rest/memories', () => {
 
     return frisby.post(REST_URL + '/memories', {
       headers: {
-        // @ts-expect-error
+        // @ts-expect-error FIXME form.getHeaders() is not found
         'Content-Type': form.getHeaders()['content-type']
       },
       body: form
@@ -68,7 +69,7 @@ describe('/rest/memories', () => {
         return frisby.post(REST_URL + '/memories', {
           headers: {
             Authorization: 'Bearer ' + jsonLogin.authentication.token,
-            // @ts-expect-error
+            // @ts-expect-error FIXME form.getHeaders() is not found
             'Content-Type': form.getHeaders()['content-type']
           },
           body: form
@@ -95,7 +96,7 @@ describe('/rest/memories', () => {
         return frisby.post(REST_URL + '/memories', {
           headers: {
             Authorization: 'Bearer ' + jsonLogin.authentication.token,
-            // @ts-expect-error
+            // @ts-expect-error FIXME form.getHeaders() is not found
             'Content-Type': form.getHeaders()['content-type']
           },
           body: form

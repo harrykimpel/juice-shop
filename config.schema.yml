@@ -67,14 +67,6 @@ application:
     message:
       type: string
   cookieConsent:
-    backgroundColor:
-      type: string
-    textColor:
-      type: string
-    buttonColor:
-      type: string
-    buttonTextColor:
-      type: string
     message:
       type: string
     dismissText:
@@ -495,6 +487,26 @@ ctf:
       code:
         type: string
     tokenSaleChallenge:
+      name:
+        type: string
+      code:
+        type: string
+    nftUnlockChallenge:
+      name:
+        type: string
+      code:
+        type: string
+    nftMintChallenge:
+      name:
+        type: string
+      code:
+        type: string
+    web3WalletChallenge:
+      name:
+        type: string
+      code:
+        type: string
+    web3SandboxChallenge:
       name:
         type: string
       code:

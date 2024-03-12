@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { Request, Response, NextFunction } from 'express'
+import { type Request, type Response, type NextFunction } from 'express'
 import { UserModel } from '../models/user'
 import challengeUtils = require('../lib/challengeUtils')
 
@@ -23,6 +23,7 @@ module.exports = function saveLoginIp () {
         lastLoginIp = security.sanitizeSecure(lastLoginIp)
       }
       if (lastLoginIp === undefined) {
+        // @ts-expect-error FIXME types not matching
         lastLoginIp = utils.toSimpleIpAddress(req.socket.remoteAddress)
       }
       UserModel.findByPk(loggedInUser.data.id).then((user: UserModel | null) => {

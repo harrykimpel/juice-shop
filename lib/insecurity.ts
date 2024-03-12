@@ -5,8 +5,8 @@
 
 import fs from 'fs'
 import crypto from 'crypto'
-import { Request, Response, NextFunction } from 'express'
-import { UserModel } from 'models/user'
+import { type Request, type Response, type NextFunction } from 'express'
+import { type UserModel } from 'models/user'
 import expressJwt from 'express-jwt'
 import jwt from 'jsonwebtoken'
 import jws from 'jws'
@@ -16,7 +16,7 @@ import * as utils from './utils'
 
 /* jslint node: true */
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-// @ts-ignore no typescript definitions for z85 :(
+// @ts-expect-error FIXME no typescript definitions for z85 :(
 import * as z85 from 'z85'
 
 export const publicKey = fs ? fs.readFileSync('encryptionkeys/jwt.pub', 'utf8') : 'placeholder-public-key'
@@ -31,8 +31,8 @@ interface ResponseWithUser {
 }
 
 interface IAuthenticatedUsers {
-  tokenMap: { [key: string]: ResponseWithUser }
-  idMap: {[key: string]: string}
+  tokenMap: Record<string, ResponseWithUser>
+  idMap: Record<string, string>
   put: (token: string, user: ResponseWithUser) => void
   get: (token: string) => ResponseWithUser | undefined
   tokenOf: (user: UserModel) => string | undefined
@@ -110,7 +110,7 @@ export const generateCoupon = (discount: number, date = new Date()) => {
 export const discountFromCoupon = (coupon: string) => {
   if (coupon) {
     const decoded = z85.decode(coupon)
-    if (decoded && hasValidFormat(decoded.toString())) {
+    if (decoded && (hasValidFormat(decoded.toString()) != null)) {
       const parts = decoded.toString().split('-')
       const validity = parts[0]
       if (utils.toMMMYY(new Date()) === validity) {
@@ -128,7 +128,7 @@ function hasValidFormat (coupon: string) {
 
 // vuln-code-snippet start redirectCryptoCurrencyChallenge redirectChallenge
 export const redirectAllowlist = new Set([
-  'https://github.com/bkimminich/juice-shop',
+  'https://github.com/juice-shop/juice-shop',
   'https://blockchain.info/address/1AbKfgvw9psQ41NbLi8kufDQTezwG8DRZm', // vuln-code-snippet vuln-line redirectCryptoCurrencyChallenge
   'https://explorer.dash.org/address/Xr556RzuwX6hg5EGpkybbv5RanJoZN17kW', // vuln-code-snippet vuln-line redirectCryptoCurrencyChallenge
   'https://etherscan.io/address/0x0f933ab9fcaaa782d0279c300d73750e1311eae6', // vuln-code-snippet vuln-line redirectCryptoCurrencyChallenge

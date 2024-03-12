@@ -3,17 +3,17 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { CodeSnippetService, CodeSnippet } from '../Services/code-snippet.service'
-import { CodeFixesService, Fixes } from '../Services/code-fixes.service'
+import { CodeSnippetService, type CodeSnippet } from '../Services/code-snippet.service'
+import { CodeFixesService, type Fixes } from '../Services/code-fixes.service'
 import { CookieService } from 'ngx-cookie'
 import { ChallengeService } from '../Services/challenge.service'
-import { VulnLinesService, result } from '../Services/vuln-lines.service'
-import { Component, Inject, OnInit } from '@angular/core'
+import { VulnLinesService, type result } from '../Services/vuln-lines.service'
+import { Component, Inject, type OnInit } from '@angular/core'
 
 import { MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { UntypedFormControl } from '@angular/forms'
 import { ConfigurationService } from '../Services/configuration.service'
-import { ThemePalette } from '@angular/material/core'
+import { type ThemePalette } from '@angular/material/core'
 
 enum ResultState {
   Undecided,
@@ -21,21 +21,27 @@ enum ResultState {
   Wrong,
 }
 
-interface Solved {
+export interface Solved {
   findIt: boolean
   fixIt: boolean
 }
 
+export interface RandomFixes {
+  fix: string
+  index: number
+}
+
 @Component({
-  selector: 'app-user-details',
+  selector: 'code-snippet',
   templateUrl: './code-snippet.component.html',
-  styleUrls: ['./code-snippet.component.scss']
-  })
+  styleUrls: ['./code-snippet.component.scss'],
+  host: { class: 'code-snippet' }
+})
 export class CodeSnippetComponent implements OnInit {
   public snippet: CodeSnippet = null
-  public fixes: Fixes = null
+  public fixes: string [] = null
   public selectedLines: number[]
-  public selectedFix: number
+  public selectedFix: number = 0
   public tab: UntypedFormControl = new UntypedFormControl(0)
   public lock: ResultState = ResultState.Undecided
   public result: ResultState = ResultState.Undecided
@@ -43,13 +49,14 @@ export class CodeSnippetComponent implements OnInit {
   public explanation: string = null
   public solved: Solved = { findIt: false, fixIt: false }
   public showFeedbackButtons: boolean = true
+  public randomFixes: RandomFixes[] = []
 
   constructor (@Inject(MAT_DIALOG_DATA) public dialogData: any, private readonly configurationService: ConfigurationService, private readonly codeSnippetService: CodeSnippetService, private readonly vulnLinesService: VulnLinesService, private readonly codeFixesService: CodeFixesService, private readonly challengeService: ChallengeService, private readonly cookieService: CookieService) { }
 
   ngOnInit () {
     this.configurationService.getApplicationConfiguration().subscribe((config) => {
       this.showFeedbackButtons = config.challenges.showFeedbackButtons
-    }, (err) => console.log(err))
+    }, (err) => { console.log(err) })
 
     this.codeSnippetService.get(this.dialogData.key).subscribe((snippet) => {
       this.snippet = snippet
@@ -64,6 +71,9 @@ export class CodeSnippetComponent implements OnInit {
     })
     this.codeFixesService.get(this.dialogData.key).subscribe((fixes) => {
       this.fixes = fixes.fixes
+      if (this.fixes) {
+        this.shuffle()
+      }
       this.solved.fixIt = this.dialogData.codingChallengeStatus >= 2
     }, () => {
       this.fixes = null
@@ -79,6 +89,10 @@ export class CodeSnippetComponent implements OnInit {
     this.explanation = null
   }
 
+  changeFix (event: Event) {
+    this.setFix(parseInt((event.target as HTMLSelectElement).value, 10))
+  }
+
   toggleTab = (event: number) => {
     this.tab.setValue(event)
     this.result = ResultState.Undecided
@@ -91,7 +105,7 @@ export class CodeSnippetComponent implements OnInit {
   }
 
   checkFix = () => {
-    this.codeFixesService.check(this.dialogData.key, this.selectedFix).subscribe((verdict) => {
+    this.codeFixesService.check(this.dialogData.key, this.randomFixes[this.selectedFix].index).subscribe((verdict) => {
       this.setVerdict(verdict.verdict)
       this.explanation = verdict.explanation
     })
@@ -127,6 +141,13 @@ export class CodeSnippetComponent implements OnInit {
     }
   }
 
+  shuffle () {
+    this.randomFixes = this.fixes
+      .map((fix, index) => ({ fix, index, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ fix, index }) => ({ fix, index }))
+  }
+
   setVerdict = (verdict: boolean) => {
     if (this.result === ResultState.Right) return
     if (verdict) {
@@ -139,7 +160,7 @@ export class CodeSnippetComponent implements OnInit {
           const expires = new Date()
           expires.setFullYear(expires.getFullYear() + 1)
           this.cookieService.put('continueCodeFindIt', continueCode, { expires })
-        }, (err) => console.log(err))
+        }, (err) => { console.log(err) })
       } else {
         this.solved.fixIt = true
         this.challengeService.continueCodeFixIt().subscribe((continueCode) => {
@@ -149,7 +170,7 @@ export class CodeSnippetComponent implements OnInit {
           const expires = new Date()
           expires.setFullYear(expires.getFullYear() + 1)
           this.cookieService.put('continueCodeFixIt', continueCode, { expires })
-        }, (err) => console.log(err))
+        }, (err) => { console.log(err) })
       }
       this.result = ResultState.Right
       this.lock = ResultState.Right

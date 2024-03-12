@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { Request, Response, NextFunction } from 'express'
+import { type Request, type Response, type NextFunction } from 'express'
 import { UserModel } from '../models/user'
 import challengeUtils = require('../lib/challengeUtils')
 import * as utils from '../lib/utils'
@@ -18,13 +18,14 @@ module.exports = function updateUserProfile () {
 
     if (loggedInUser) {
       UserModel.findByPk(loggedInUser.data.id).then((user: UserModel | null) => {
-        if (user) {
+        if (user != null) {
           challengeUtils.solveIf(challenges.csrfChallenge, () => {
             return ((req.headers.origin?.includes('://htmledit.squarefree.com')) ??
               (req.headers.referer?.includes('://htmledit.squarefree.com'))) &&
               req.body.username !== user.username
           })
           void user.update({ username: req.body.username }).then((savedUser: UserModel) => {
+            // @ts-expect-error FIXME some properties missing in savedUser
             savedUser = utils.queryResultToJson(savedUser)
             const updatedToken = security.authorize(savedUser)
             security.authenticatedUsers.put(updatedToken, savedUser)

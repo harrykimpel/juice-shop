@@ -20,7 +20,7 @@ import { SecurityAnswerModel } from '../models/securityAnswer'
 import { SecurityQuestionModel } from '../models/securityQuestion'
 import { UserModel } from '../models/user'
 import { WalletModel } from '../models/wallet'
-import { Address, Card, Challenge, Delivery, Memory, Product, SecurityQuestion, User } from './types'
+import { type Address, type Card, type Challenge, type Delivery, type Memory, type Product, type SecurityQuestion, type User } from './types'
 import logger from '../lib/logger'
 import config from 'config'
 import path from 'path'
@@ -86,7 +86,7 @@ async function createChallenges() {
           key,
           name,
           category,
-          tags: tags ? tags.join(',') : undefined,
+          tags: (tags != null) ? tags.join(',') : undefined,
           description: effectiveDisabledEnv ? (description + ' <em>(This challenge is <strong>' + (config.get('challenges.safetyOverride') ? 'potentially harmful' : 'not available') + '</strong> on ' + effectiveDisabledEnv + '!)</em>') : description,
           difficulty,
           solved: false,
@@ -94,7 +94,7 @@ async function createChallenges() {
           hintUrl: showHints ? hintUrl : null,
           mitigationUrl: showMitigations ? mitigationUrl : null,
           disabledEnv: config.get<boolean>('challenges.safetyOverride') ? null : effectiveDisabledEnv,
-          tutorialOrder: tutorial ? tutorial.order : null,
+          tutorialOrder: (tutorial != null) ? tutorial.order : null,
           codingChallengeStatus: 0
         })
       } catch (err) {
@@ -122,11 +122,11 @@ async function createUsers() {
           lastLoginIp
         })
         datacache.users[key] = user
-        if (securityQuestion) await createSecurityAnswer(user.id, securityQuestion.id, securityQuestion.answer)
-        if (feedback) await createFeedback(user.id, feedback.comment, feedback.rating, user.email)
+        if (securityQuestion != null) await createSecurityAnswer(user.id, securityQuestion.id, securityQuestion.answer)
+        if (feedback != null) await createFeedback(user.id, feedback.comment, feedback.rating, user.email)
         if (deletedFlag) await deleteUser(user.id)
-        if (address) await createAddresses(user.id, address)
-        if (card) await createCards(user.id, card)
+        if (address != null) await createAddresses(user.id, address)
+        if (card != null) await createCards(user.id, card)
       } catch (err) {
         logger.error(`Could not insert User ${key}: ${utils.getErrorMessage(err)}`)
       }
@@ -140,7 +140,7 @@ async function createWallet() {
     users.map(async (user: User, index: number) => {
       return await WalletModel.create({
         UserId: index + 1,
-        balance: user.walletBalance !== undefined ? user.walletBalance : 0
+        balance: user.walletBalance ?? 0
       }).catch((err: unknown) => {
         logger.error(`Could not create wallet: ${utils.getErrorMessage(err)}`)
       })
@@ -168,27 +168,29 @@ async function createDeliveryMethods() {
   )
 }
 
-function createAddresses(UserId: number, addresses: Address[]) {
-  addresses.map(async (address) => {
-    return await AddressModel.create({
-      UserId: UserId,
-      country: address.country,
-      fullName: address.fullName,
-      mobileNum: address.mobileNum,
-      zipCode: address.zipCode,
-      streetAddress: address.streetAddress,
-      city: address.city,
-      state: address.state ? address.state : null
-    }).catch((err: unknown) => {
-      logger.error(`Could not create address: ${utils.getErrorMessage(err)}`)
+async function createAddresses (UserId: number, addresses: Address[]) {
+  return await Promise.all(
+    addresses.map(async (address) => {
+      return await AddressModel.create({
+        UserId,
+        country: address.country,
+        fullName: address.fullName,
+        mobileNum: address.mobileNum,
+        zipCode: address.zipCode,
+        streetAddress: address.streetAddress,
+        city: address.city,
+        state: address.state ? address.state : null
+      }).catch((err: unknown) => {
+        logger.error(`Could not create address: ${utils.getErrorMessage(err)}`)
+      })
     })
-  })
+  )
 }
 
 async function createCards(UserId: number, cards: Card[]) {
   return await Promise.all(cards.map(async (card) => {
     return await CardModel.create({
-      UserId: UserId,
+      UserId,
       fullName: card.fullName,
       cardNum: Number(card.cardNum),
       expMonth: card.expMonth,
@@ -239,7 +241,7 @@ async function createQuantity() {
     config.get<Product[]>('products').map(async (product: Product, index: number) => {
       return await QuantityModel.create({
         ProductId: index + 1,
-        quantity: product.quantity !== undefined ? product.quantity : Math.floor(Math.random() * 70 + 30),
+        quantity: product.quantity ?? Math.floor(Math.random() * 70 + 30),
         limitPerUser: product.limitPerUser ?? null
       }).catch((err: unknown) => {
         logger.error(`Could not create quantity: ${utils.getErrorMessage(err)}`)
@@ -336,7 +338,7 @@ async function createProducts() {
             logger.error(`Could not insert Product ${product.name}: ${utils.getErrorMessage(err)}`)
           }
         ).then((persistedProduct) => {
-          if (persistedProduct) {
+          if (persistedProduct != null) {
             if (useForChristmasSpecialChallenge) { datacache.products.christmasSpecial = persistedProduct }
             if (urlForProductTamperingChallenge) {
               datacache.products.osaft = persistedProduct
@@ -691,13 +693,13 @@ async function createOrders() {
   return await Promise.all(
     orders.map(({ orderId, email, totalPrice, bonus, products, eta, delivered }) =>
       mongodb.orders.insert({
-        orderId: orderId,
-        email: email,
-        totalPrice: totalPrice,
-        bonus: bonus,
-        products: products,
-        eta: eta,
-        delivered: delivered
+        orderId,
+        email,
+        totalPrice,
+        bonus,
+        products,
+        eta,
+        delivered
       }).catch((err: unknown) => {
         logger.error(`Could not insert Order ${orderId}: ${utils.getErrorMessage(err)}`)
       })

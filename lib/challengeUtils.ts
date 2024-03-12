@@ -8,11 +8,16 @@ import * as utils from './utils'
 import { calculateCheatScore, calculateFindItCheatScore, calculateFixItCheatScore } from './antiCheat'
 import * as webhook from './webhook'
 import * as accuracy from './accuracy'
+import { type Server } from 'socket.io'
 
 const challenges = require('../data/datacache').challenges
 const notifications = require('../data/datacache').notifications
 const Entities = require('html-entities').AllHtmlEntities
 const entities = new Entities()
+
+const globalWithSocketIO = global as typeof globalThis & {
+  io: SocketIOClientStatic & Server
+}
 
 export const solveIf = function (challenge: any, criteria: () => any, isRestore: boolean = false) {
   if (notSolved(challenge) && criteria()) {
@@ -43,16 +48,27 @@ export const sendNotification = function (challenge: { difficulty?: number, key:
       key: challenge.key,
       name: challenge.name,
       challenge: challenge.name + ' (' + entities.decode(sanitizeHtml(challenge.description, { allowedTags: [], allowedAttributes: {} })) + ')',
-      flag: flag,
+      flag,
       hidden: !config.get('challenges.showSolvedNotifications'),
-      isRestore: isRestore
+      isRestore
     }
     const wasPreviouslyShown = notifications.find(({ key }: { key: string }) => key === challenge.key) !== undefined
     notifications.push(notification)
 
-    if (global.io && (isRestore || !wasPreviouslyShown)) {
-      // @ts-expect-error
-      global.io.emit('challenge solved', notification)
+    if (globalWithSocketIO.io && (isRestore || !wasPreviouslyShown)) {
+      globalWithSocketIO.io.emit('challenge solved', notification)
+    }
+  }
+}
+
+export const sendCodingChallengeNotification = function (challenge: { key: string, codingChallengeStatus: 0 | 1 | 2 }) {
+  if (challenge.codingChallengeStatus > 0) {
+    const notification = {
+      key: challenge.key,
+      codingChallengeStatus: challenge.codingChallengeStatus
+    }
+    if (globalWithSocketIO.io) {
+      globalWithSocketIO.io.emit('code challenge solved', notification)
     }
   }
 }
@@ -89,6 +105,7 @@ export const solveFindIt = async function (key: string, isRestore: boolean) {
     accuracy.storeFindItVerdict(solvedChallenge.key, true)
     accuracy.calculateFindItAccuracy(solvedChallenge.key)
     await calculateFindItCheatScore(solvedChallenge)
+    sendCodingChallengeNotification({ key, codingChallengeStatus: 1 })
   }
 }
 
@@ -100,5 +117,6 @@ export const solveFixIt = async function (key: string, isRestore: boolean) {
     accuracy.storeFixItVerdict(solvedChallenge.key, true)
     accuracy.calculateFixItAccuracy(solvedChallenge.key)
     await calculateFixItCheatScore(solvedChallenge)
+    sendCodingChallengeNotification({ key, codingChallengeStatus: 2 })
   }
 }

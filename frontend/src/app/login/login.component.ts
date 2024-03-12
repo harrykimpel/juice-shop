@@ -6,9 +6,9 @@
 import { CookieService } from 'ngx-cookie'
 import { WindowRefService } from '../Services/window-ref.service'
 import { Router } from '@angular/router'
-import { Component, NgZone, OnInit } from '@angular/core'
+import { Component, NgZone, type OnInit } from '@angular/core'
 import { UntypedFormControl, Validators } from '@angular/forms'
-import { dom, library } from '@fortawesome/fontawesome-svg-core'
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { UserService } from '../Services/user.service'
 import { faEye, faEyeSlash, faKey } from '@fortawesome/free-solid-svg-icons'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
@@ -17,7 +17,6 @@ import { ConfigurationService } from '../Services/configuration.service'
 import { BasketService } from '../Services/basket.service'
 
 library.add(faKey, faEye, faEyeSlash, faGoogle)
-dom.watch()
 
 const oauthProviderUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
 
@@ -65,9 +64,9 @@ export class LoginComponent implements OnInit {
           console.log(this.redirectUri + ' is not an authorized redirect URI for this application.')
         }
       }
-    }, (err) => console.log(err))
+    }, (err) => { console.log(err) })
 
-    this.formSubmitService.attachEnterKeyHandler('login-form', 'loginButton', () => this.login())
+    this.formSubmitService.attachEnterKeyHandler('login-form', 'loginButton', () => { this.login() })
   }
 
   login () {

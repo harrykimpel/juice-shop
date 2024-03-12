@@ -4,6 +4,7 @@
  */
 
 import frisby = require('frisby')
+import { expect } from '@jest/globals'
 import config from 'config'
 import { initialize, bot } from '../../routes/chatbot'
 import fs from 'fs/promises'
@@ -15,7 +16,7 @@ const API_URL = `${URL}/api/`
 let trainingData: { data: any[] }
 
 async function login ({ email, password }: { email: string, password: string }) {
-  // @ts-expect-error
+  // @ts-expect-error FIXME promise return handling broken
   const loginRes = await frisby
     .post(REST_URL + '/user/login', {
       email,
@@ -99,7 +100,7 @@ describe('/chatbot', () => {
     })
 
     it('Returns greeting if username is defined', async () => {
-      if (!bot) {
+      if (bot == null) {
         throw new Error('Bot not initialized')
       }
       const { token } = await login({
@@ -131,7 +132,7 @@ describe('/chatbot', () => {
     })
 
     it('Returns proper response for registered user', async () => {
-      if (!bot) {
+      if (bot == null) {
         throw new Error('Bot not initialized')
       }
       const { token } = await login({
@@ -163,7 +164,6 @@ describe('/chatbot', () => {
         .expect('status', 200)
         .promise()
         .then(({ json }) => {
-          // @ts-expect-error
           expect(trainingData.data[0].answers).toContainEqual(json)
         })
     })
