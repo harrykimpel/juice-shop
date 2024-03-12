@@ -136,12 +136,12 @@ const collectDurationPromise = (name: string, func: any) => {
     return res
   }
 }
-void collectDurationPromise('validatePreconditions', require('./lib/startup/validatePreconditions'))()
+//void collectDurationPromise('validatePreconditions', require('./lib/startup/validatePreconditions'))()
 void collectDurationPromise('cleanupFtpFolder', require('./lib/startup/cleanupFtpFolder'))()
 void collectDurationPromise('validateConfig', require('./lib/startup/validateConfig'))({})
 
 // Reloads the i18n files in case of server restarts or starts.
-async function restoreOverwrittenFilesWithOriginals () {
+async function restoreOverwrittenFilesWithOriginals() {
   await collectDurationPromise('restoreOverwrittenFilesWithOriginals', require('./lib/startup/restoreOverwrittenFilesWithOriginals'))()
 }
 
@@ -313,7 +313,7 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   app.use('/rest/user/reset-password', new RateLimit({
     windowMs: 5 * 60 * 1000,
     max: 100,
-    keyGenerator ({ headers, ip }: { headers: any, ip: any }) { return headers['X-Forwarded-For'] || ip } // vuln-code-snippet vuln-line resetPasswordMortyChallenge
+    keyGenerator({ headers, ip }: { headers: any, ip: any }) { return headers['X-Forwarded-For'] || ip } // vuln-code-snippet vuln-line resetPasswordMortyChallenge
   }))
   // vuln-code-snippet end resetPasswordMortyChallenge
 
@@ -683,8 +683,15 @@ const customizeApplication = require('./lib/startup/customizeApplication')
 
 export async function start (readyCallback: any) {
   const datacreatorEnd = startupGauge.startTimer({ task: 'datacreator' })
-  await sequelize.sync({ force: true })
-  await datacreator()
+
+  const isSequelizeSyncAndData = process.env.IS_SEQUELIZE_SYNC_AND_DATA;
+
+  if (isSequelizeSyncAndData &&
+    isSequelizeSyncAndData == "true") {
+    await sequelize.sync({ force: true })
+    await datacreator()
+  }
+
   datacreatorEnd()
   const port = process.env.PORT ?? config.get('server.port')
   process.env.BASE_PATH = process.env.BASE_PATH ?? config.get('server.basePath')
@@ -707,7 +714,7 @@ export async function start (readyCallback: any) {
   void collectDurationPromise('customizeEasterEgg', customizeEasterEgg)() // vuln-code-snippet hide-line
 }
 
-export function close (exitCode: number | undefined) {
+export function close(exitCode: number | undefined) {
   if (server) {
     clearInterval(metricsUpdateLoop)
     server.close()

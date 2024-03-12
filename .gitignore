@@ -63,6 +63,5 @@ config/*.yml
 !config/oss.yml
 
 # System Files
-.DS_Store
 
 newrelic_agent.log

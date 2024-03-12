@@ -37,7 +37,7 @@ const entities = new Entities()
 
 const readFile = util.promisify(fs.readFile)
 
-function loadStaticData (file: string) {
+function loadStaticData(file: string) {
   const filePath = path.resolve('./data/static/' + file + '.yml')
   return readFile(filePath, 'utf8')
     .then(safeLoad)
@@ -68,7 +68,7 @@ module.exports = async () => {
   }
 }
 
-async function createChallenges () {
+async function createChallenges() {
   const showHints = config.get('challenges.showHints')
   const showMitigations = config.get('challenges.showMitigations')
 
@@ -104,7 +104,7 @@ async function createChallenges () {
   )
 }
 
-async function createUsers () {
+async function createUsers() {
   const users = await loadStaticData('users')
 
   await Promise.all(
@@ -134,7 +134,7 @@ async function createUsers () {
   )
 }
 
-async function createWallet () {
+async function createWallet() {
   const users = await loadStaticData('users')
   return await Promise.all(
     users.map(async (user: User, index: number) => {
@@ -148,7 +148,7 @@ async function createWallet () {
   )
 }
 
-async function createDeliveryMethods () {
+async function createDeliveryMethods() {
   const deliveries = await loadStaticData('deliveries')
 
   await Promise.all(
@@ -187,7 +187,7 @@ async function createAddresses (UserId: number, addresses: Address[]) {
   )
 }
 
-async function createCards (UserId: number, cards: Card[]) {
+async function createCards(UserId: number, cards: Card[]) {
   return await Promise.all(cards.map(async (card) => {
     return await CardModel.create({
       UserId,
@@ -201,25 +201,25 @@ async function createCards (UserId: number, cards: Card[]) {
   }))
 }
 
-async function deleteUser (userId: number) {
+async function deleteUser(userId: number) {
   return await UserModel.destroy({ where: { id: userId } }).catch((err: unknown) => {
     logger.error(`Could not perform soft delete for the user ${userId}: ${utils.getErrorMessage(err)}`)
   })
 }
 
-async function deleteProduct (productId: number) {
+async function deleteProduct(productId: number) {
   return await ProductModel.destroy({ where: { id: productId } }).catch((err: unknown) => {
     logger.error(`Could not perform soft delete for the product ${productId}: ${utils.getErrorMessage(err)}`)
   })
 }
 
-async function createRandomFakeUsers () {
-  function getGeneratedRandomFakeUserEmail () {
+async function createRandomFakeUsers() {
+  function getGeneratedRandomFakeUserEmail() {
     const randomDomain = makeRandomString(4).toLowerCase() + '.' + makeRandomString(2).toLowerCase()
     return makeRandomString(5).toLowerCase() + '@' + randomDomain
   }
 
-  function makeRandomString (length: number) {
+  function makeRandomString(length: number) {
     let text = ''
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
@@ -236,7 +236,7 @@ async function createRandomFakeUsers () {
   ))
 }
 
-async function createQuantity () {
+async function createQuantity() {
   return await Promise.all(
     config.get<Product[]>('products').map(async (product: Product, index: number) => {
       return await QuantityModel.create({
@@ -250,7 +250,7 @@ async function createQuantity () {
   )
 }
 
-async function createMemories () {
+async function createMemories() {
   const memories = [
     MemoryModel.create({
       imagePath: 'assets/public/images/uploads/😼-#zatschi-#whoneedsfourlegs-1572600969477.jpg',
@@ -287,7 +287,7 @@ async function createMemories () {
   return await Promise.all(memories)
 }
 
-async function createProducts () {
+async function createProducts() {
   const products = utils.thaw(config.get('products')).map((product: Product) => {
     product.price = product.price ?? Math.floor(Math.random() * 9 + 1)
     product.deluxePrice = product.deluxePrice ?? product.price
@@ -380,18 +380,18 @@ async function createProducts () {
     )
   )
 
-  function customizeChangeProductChallenge (description: string, customUrl: string, customProduct: Product) {
+  function customizeChangeProductChallenge(description: string, customUrl: string, customProduct: Product) {
     let customDescription = description.replace(/OWASP SSL Advanced Forensic Tool \(O-Saft\)/g, customProduct.name)
     customDescription = customDescription.replace('https://owasp.slack.com', customUrl)
     return customDescription
   }
 
-  function customizeRetrieveBlueprintChallenge (hint: string, customProduct: Product) {
+  function customizeRetrieveBlueprintChallenge(hint: string, customProduct: Product) {
     return hint.replace(/OWASP Juice Shop Logo \(3D-printed\)/g, customProduct.name)
   }
 }
 
-async function createBaskets () {
+async function createBaskets() {
   const baskets = [
     { UserId: 1 },
     { UserId: 2 },
@@ -411,7 +411,7 @@ async function createBaskets () {
   )
 }
 
-async function createBasketItems () {
+async function createBasketItems() {
   const basketItems = [
     {
       BasketId: 1,
@@ -464,7 +464,7 @@ async function createBasketItems () {
   )
 }
 
-async function createAnonymousFeedback () {
+async function createAnonymousFeedback() {
   const feedbacks = [
     {
       comment: 'Incompetent customer support! Can\'t even upload photo of broken purchase!<br><em>Support Team: Sorry, only order confirmation PDFs can be attached to complaints!</em>',
@@ -489,14 +489,14 @@ async function createAnonymousFeedback () {
   )
 }
 
-async function createFeedback (UserId: number | null, comment: string, rating: number, author?: string) {
+async function createFeedback(UserId: number | null, comment: string, rating: number, author?: string) {
   const authoredComment = author ? `${comment} (***${author.slice(3)})` : `${comment} (anonymous)`
   return await FeedbackModel.create({ UserId, comment: authoredComment, rating }).catch((err: unknown) => {
     logger.error(`Could not insert Feedback ${authoredComment} mapped to UserId ${UserId}: ${utils.getErrorMessage(err)}`)
   })
 }
 
-async function createComplaints () {
+async function createComplaints() {
   return await ComplaintModel.create({
     UserId: 3,
     message: 'I\'ll build my own eCommerce business! With Black Jack! And Hookers!'
@@ -505,7 +505,7 @@ async function createComplaints () {
   })
 }
 
-async function createRecycleItem () {
+async function createRecycleItem() {
   const recycles = [
     {
       UserId: 2,
@@ -576,7 +576,7 @@ async function createRecycleItem () {
   )
 }
 
-async function createRecycle (data: { UserId: number, quantity: number, AddressId: number, date: string, isPickup: boolean }) {
+async function createRecycle(data: { UserId: number, quantity: number, AddressId: number, date: string, isPickup: boolean }) {
   return await RecycleModel.create({
     UserId: data.UserId,
     AddressId: data.AddressId,
@@ -588,7 +588,7 @@ async function createRecycle (data: { UserId: number, quantity: number, AddressI
   })
 }
 
-async function createSecurityQuestions () {
+async function createSecurityQuestions() {
   const questions = await loadStaticData('securityQuestions')
 
   await Promise.all(
@@ -602,13 +602,13 @@ async function createSecurityQuestions () {
   )
 }
 
-async function createSecurityAnswer (UserId: number, SecurityQuestionId: number, answer: string) {
+async function createSecurityAnswer(UserId: number, SecurityQuestionId: number, answer: string) {
   return await SecurityAnswerModel.create({ SecurityQuestionId, UserId, answer }).catch((err: unknown) => {
     logger.error(`Could not insert SecurityAnswer ${answer} mapped to UserId ${UserId}: ${utils.getErrorMessage(err)}`)
   })
 }
 
-async function createOrders () {
+async function createOrders() {
   const products = config.get<Product[]>('products')
   const basket1Products = [
     {
